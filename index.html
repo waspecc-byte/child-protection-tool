@@ -3,177 +3,168 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>兒少保護訪視紀錄風險掃描系統</title>
+<title>兒少保護訪視紀錄風險掃描系統 v2（語意分析版）</title>
 <style>
-  :root {
-    --red:#E24B4A; --red-bg:#FCEBEB; --red-text:#A32D2D; --red-border:#F09595;
-    --amber:#EF9F27; --amber-bg:#FAEEDA; --amber-text:#854F0B; --amber-border:#FAC775;
-    --green:#639922; --green-bg:#EAF3DE; --green-text:#3B6D11; --green-border:#C0DD97;
-    --blue-text:#185FA5; --blue-bg:#E6F1FB; --blue-border:#B5D4F4;
-    --bg:#ffffff; --bg2:#f7f6f3; --bg3:#f0efe9;
-    --text:#1a1a18; --text2:#5f5e5a; --text3:#9c9a92;
-    --border:#e0dfd8; --border2:#cccac0;
-    --radius:8px; --radius-lg:12px;
-    --font: -apple-system, 'Helvetica Neue', Arial, sans-serif;
-  }
-  @media(prefers-color-scheme:dark){
-    :root{
-      --bg:#1c1c1a; --bg2:#252523; --bg3:#2e2e2b;
-      --text:#e8e6de; --text2:#a8a69e; --text3:#6e6d67;
-      --border:#3a3935; --border2:#4a4945;
-      --red-bg:#3d1a1a; --red-text:#f09595; --red-border:#7a2020;
-      --amber-bg:#3a2a10; --amber-text:#fac775; --amber-border:#7a5010;
-      --green-bg:#1a2e10; --green-text:#c0dd97; --green-border:#2e5a15;
-      --blue-bg:#0c2440; --blue-text:#85b7eb; --blue-border:#185fa5;
-    }
-  }
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:var(--font);font-size:15px;color:var(--text);background:var(--bg3);min-height:100vh}
-  .page{max-width:800px;margin:0 auto;padding:24px 16px 60px}
-  /* Header */
-  .header{margin-bottom:24px}
-  .header h1{font-size:20px;font-weight:600;margin-bottom:4px}
-  .header p{font-size:13px;color:var(--text2);line-height:1.5}
-  .tag{display:inline-block;font-size:11px;padding:2px 7px;border-radius:4px;background:var(--blue-bg);color:var(--blue-text);margin-right:6px;font-weight:500}
-  /* Stat chips */
-  .stat-row{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
-  .chip{font-size:12px;padding:4px 10px;border-radius:4px;font-weight:500}
-  .chip-h{background:var(--red-bg);color:var(--red-text)}
-  .chip-m{background:var(--amber-bg);color:var(--amber-text)}
-  .chip-l{background:var(--green-bg);color:var(--green-text)}
-  .chip-n{background:var(--bg2);color:var(--text2);border:0.5px solid var(--border)}
-  /* Tabs */
-  .tabs{display:flex;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:20px;background:var(--bg2)}
-  .tab{flex:1;padding:9px 8px;font-size:13px;font-family:var(--font);cursor:pointer;background:transparent;border:none;border-right:1px solid var(--border);color:var(--text2);transition:background .15s,color .15s}
-  .tab:last-child{border-right:none}
-  .tab:hover{background:var(--bg3)}
-  .tab.active{background:var(--bg);color:var(--text);font-weight:500}
-  .tab-panel{display:none}
-  .tab-panel.active{display:block}
-  /* Card */
-  .card{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:16px}
-  .card-header{padding:10px 14px;background:var(--bg2);border-bottom:1px solid var(--border);font-size:13px;font-weight:500;display:flex;align-items:center;gap:8px}
-  .card-body{padding:14px}
-  /* Textarea */
-  textarea{width:100%;min-height:140px;padding:12px;border:1px solid var(--border);border-radius:var(--radius);font-size:14px;font-family:var(--font);color:var(--text);background:var(--bg);resize:vertical;line-height:1.7;margin-bottom:10px}
-  textarea:focus{outline:none;border-color:var(--border2)}
-  /* Buttons */
-  .btn-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-  .btn{padding:8px 18px;border:1px solid var(--border);border-radius:var(--radius);background:transparent;color:var(--text);cursor:pointer;font-size:13px;font-family:var(--font);font-weight:500;transition:background .15s}
-  .btn:hover{background:var(--bg2)}
-  .btn-primary{border-color:var(--blue-border);color:var(--blue-text);background:var(--blue-bg)}
-  .btn-primary:hover{opacity:.85}
-  .btn-sm{padding:5px 10px;font-size:12px;font-weight:400}
-  .char-count{font-size:12px;color:var(--text3);margin-left:auto}
-  /* Result */
-  .result-header{padding:12px 14px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-  .risk-badge{font-size:12px;padding:3px 10px;border-radius:4px;font-weight:600}
-  .rb-high{background:var(--red-bg);color:var(--red-text)}
-  .rb-mid{background:var(--amber-bg);color:var(--amber-text)}
-  .rb-low{background:var(--green-bg);color:var(--green-text)}
-  .rb-none{background:var(--bg2);color:var(--text2);border:1px solid var(--border)}
-  .hit-list{padding:8px 14px}
-  .hit{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
-  .hit:last-child{border-bottom:none}
-  .hit-dot{width:9px;height:9px;border-radius:50%;margin-top:5px;flex-shrink:0}
-  .dot-h{background:var(--red)}
-  .dot-m{background:var(--amber)}
-  .dot-l{background:var(--green)}
-  .hit-body{flex:1;min-width:0}
-  .hit-kw{font-weight:600;font-size:14px}
-  .hit-meta{font-size:11px;color:var(--text2);margin-top:2px}
-  .hit-ctx{font-size:12px;color:var(--text2);margin-top:5px;padding:5px 8px;background:var(--bg2);border-radius:4px;border-left:2px solid var(--border2);line-height:1.6}
-  .hit-ctx strong{color:var(--text);font-weight:600}
-  .hit-score{font-size:12px;font-weight:600;margin-top:3px}
-  .hs-h{color:var(--red-text)}.hs-m{color:var(--amber-text)}.hs-l{color:var(--green-text)}
-  .total-bar{padding:12px 14px;background:var(--bg2);border-top:1px solid var(--border);display:flex;align-items:center;gap:10px}
-  .total-num{font-size:24px;font-weight:700;color:var(--text)}
-  .total-label{font-size:13px;color:var(--text2)}
-  .disclaimer{font-size:11px;color:var(--text3);margin-left:auto;text-align:right;line-height:1.5}
-  .no-hit{padding:20px;text-align:center;font-size:13px;color:var(--text2)}
-  /* KW editor */
-  .kw-section{margin-bottom:10px}
-  .kw-sec-head{padding:9px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;display:flex;align-items:center;gap:8px;font-size:13px;user-select:none}
-  .kw-sec-body{display:none;padding:12px;border:1px solid var(--border);border-top:none;border-radius:0 0 var(--radius) var(--radius);background:var(--bg)}
-  .kw-sec-body.open{display:block}
-  .kw-subgroup{margin-bottom:12px}
-  .kw-sublabel{font-size:11px;font-weight:500;color:var(--text2);margin-bottom:5px}
-  .kw-sdm{font-size:10px;color:var(--text3);margin-left:4px;font-weight:400}
-  .chips-wrap{display:flex;flex-wrap:wrap;gap:5px}
-  .kw-chip{font-size:12px;padding:3px 9px;border-radius:12px;border:1px solid;cursor:pointer;user-select:none;transition:opacity .15s;line-height:1.4}
-  .kc-h{background:var(--red-bg);color:var(--red-text);border-color:var(--red-border)}
-  .kc-m{background:var(--amber-bg);color:var(--amber-text);border-color:var(--amber-border)}
-  .kc-l{background:var(--green-bg);color:var(--green-text);border-color:var(--green-border)}
-  .kw-chip.off{opacity:.3}
-  .kw-toolbar{display:flex;gap:8px;margin-bottom:12px}
-  /* Demo */
-  .demo-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:10px;overflow:hidden}
-  .demo-head{padding:9px 12px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;font-size:13px;font-weight:500}
-  .demo-text{padding:10px 12px;font-size:12px;color:var(--text2);line-height:1.6}
-  /* Footer */
-  .footer{margin-top:32px;padding-top:16px;border-top:1px solid var(--border);font-size:11px;color:var(--text3);line-height:1.6;text-align:center}
-  /* Divider */
-  .sdm-ref{font-size:11px;color:var(--text3);padding:8px 14px;border-top:1px solid var(--border);background:var(--bg2)}
-  /* Responsive */
-  @media(max-width:500px){
-    .tabs{flex-direction:column}
-    .tab{border-right:none;border-bottom:1px solid var(--border)}
-    .tab:last-child{border-bottom:none}
-  }
+:root{
+  --red:#E24B4A;--red-bg:#FCEBEB;--red-text:#A32D2D;--red-border:#F09595;
+  --amber:#EF9F27;--amber-bg:#FAEEDA;--amber-text:#854F0B;--amber-border:#FAC775;
+  --green:#639922;--green-bg:#EAF3DE;--green-text:#3B6D11;--green-border:#C0DD97;
+  --blue-text:#185FA5;--blue-bg:#E6F1FB;--blue-border:#B5D4F4;
+  --bg:#fff;--bg2:#f7f6f3;--bg3:#f0efe9;
+  --text:#1a1a18;--text2:#5f5e5a;--text3:#9c9a92;
+  --border:#e0dfd8;--border2:#cccac0;
+  --radius:8px;--radius-lg:12px;
+  --font:-apple-system,'Helvetica Neue',Arial,sans-serif;
+}
+@media(prefers-color-scheme:dark){:root{
+  --bg:#1c1c1a;--bg2:#252523;--bg3:#2e2e2b;
+  --text:#e8e6de;--text2:#a8a69e;--text3:#6e6d67;
+  --border:#3a3935;--border2:#4a4945;
+  --red-bg:#3d1a1a;--red-text:#f09595;--red-border:#7a2020;
+  --amber-bg:#3a2a10;--amber-text:#fac775;--amber-border:#7a5010;
+  --green-bg:#1a2e10;--green-text:#c0dd97;--green-border:#2e5a15;
+  --blue-bg:#0c2440;--blue-text:#85b7eb;--blue-border:#185fa5;
+}}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);font-size:15px;color:var(--text);background:var(--bg3);min-height:100vh}
+.page{max-width:800px;margin:0 auto;padding:24px 16px 60px}
+.header{margin-bottom:20px}
+.header h1{font-size:20px;font-weight:600;margin-bottom:6px}
+.header p{font-size:13px;color:var(--text2);line-height:1.6}
+.tag{display:inline-block;font-size:11px;padding:2px 7px;border-radius:4px;background:var(--blue-bg);color:var(--blue-text);margin-right:6px;font-weight:500}
+.tag-new{background:#f0e6ff;color:#6b21a8}
+/* Model loader */
+.model-bar{padding:12px 16px;border-radius:var(--radius);border:1px solid var(--border);background:var(--bg2);margin-bottom:16px;font-size:13px;display:flex;align-items:center;gap:10px}
+.model-dot{width:8px;height:8px;border-radius:50%;background:var(--amber);flex-shrink:0;animation:pulse 1.5s infinite}
+.model-dot.ready{background:var(--green);animation:none}
+.model-dot.error{background:var(--red);animation:none}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.progress-wrap{flex:1;height:4px;background:var(--border);border-radius:2px;overflow:hidden}
+.progress-bar{height:100%;background:var(--blue-text);border-radius:2px;transition:width .3s;width:0%}
+/* Tabs */
+.tabs{display:flex;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:20px;background:var(--bg2)}
+.tab{flex:1;padding:9px 8px;font-size:13px;font-family:var(--font);cursor:pointer;background:transparent;border:none;border-right:1px solid var(--border);color:var(--text2);transition:background .15s,color .15s}
+.tab:last-child{border-right:none}
+.tab.active{background:var(--bg);color:var(--text);font-weight:500}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+/* Input */
+.card{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:16px}
+.card-header{padding:10px 14px;background:var(--bg2);border-bottom:1px solid var(--border);font-size:13px;font-weight:500;display:flex;align-items:center;gap:8px}
+.card-body{padding:14px}
+textarea{width:100%;min-height:140px;padding:12px;border:1px solid var(--border);border-radius:var(--radius);font-size:14px;font-family:var(--font);color:var(--text);background:var(--bg);resize:vertical;line-height:1.7;margin-bottom:10px}
+textarea:focus{outline:none;border-color:var(--border2)}
+.btn-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.btn{padding:8px 18px;border:1px solid var(--border);border-radius:var(--radius);background:transparent;color:var(--text);cursor:pointer;font-size:13px;font-family:var(--font);font-weight:500;transition:background .15s}
+.btn:hover{background:var(--bg2)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn-primary{border-color:var(--blue-border);color:var(--blue-text);background:var(--blue-bg)}
+.btn-primary:hover{opacity:.85}
+.char-count{font-size:12px;color:var(--text3);margin-left:auto}
+/* Mode toggle */
+.mode-row{display:flex;gap:8px;margin-bottom:14px;align-items:center}
+.mode-label{font-size:12px;color:var(--text2)}
+.mode-btn{padding:5px 12px;font-size:12px;border:1px solid var(--border);border-radius:20px;background:transparent;cursor:pointer;font-family:var(--font);color:var(--text2);transition:all .15s}
+.mode-btn.active{background:var(--blue-bg);border-color:var(--blue-border);color:var(--blue-text);font-weight:500}
+/* Results */
+.result-header{padding:12px 14px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.risk-badge{font-size:12px;padding:3px 10px;border-radius:4px;font-weight:600}
+.rb-high{background:var(--red-bg);color:var(--red-text)}
+.rb-mid{background:var(--amber-bg);color:var(--amber-text)}
+.rb-low{background:var(--green-bg);color:var(--green-text)}
+.rb-none{background:var(--bg2);color:var(--text2);border:1px solid var(--border)}
+/* Semantic results */
+.sem-group{margin-bottom:0}
+.sem-item{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;border-bottom:1px solid var(--border)}
+.sem-item:last-child{border-bottom:none}
+.sem-dot{width:9px;height:9px;border-radius:50%;margin-top:5px;flex-shrink:0}
+.dot-h{background:var(--red)}.dot-m{background:var(--amber)}.dot-l{background:var(--green)}
+.sem-body{flex:1;min-width:0}
+.sem-concept{font-weight:600;font-size:14px}
+.sem-sdm{font-size:11px;color:var(--text2);margin-top:2px}
+.sem-score-wrap{margin-top:6px;display:flex;align-items:center;gap:8px}
+.sem-bar-bg{flex:1;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.sem-bar{height:100%;border-radius:3px;transition:width .5s}
+.bar-h{background:var(--red)}.bar-m{background:var(--amber)}.bar-l{background:var(--green)}
+.sem-pct{font-size:12px;font-weight:600;min-width:36px;text-align:right}
+.pct-h{color:var(--red-text)}.pct-m{color:var(--amber-text)}.pct-l{color:var(--green-text)}
+.sem-reason{font-size:12px;color:var(--text2);margin-top:5px;padding:4px 8px;background:var(--bg2);border-radius:4px;border-left:2px solid var(--border2);line-height:1.5}
+/* Total bar */
+.total-bar{padding:12px 14px;background:var(--bg2);border-top:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.total-num{font-size:22px;font-weight:700;color:var(--text)}
+.total-label{font-size:13px;color:var(--text2)}
+.disclaimer{font-size:11px;color:var(--text3);margin-left:auto;text-align:right;line-height:1.5}
+.sdm-ref{font-size:11px;color:var(--text3);padding:8px 14px;border-top:1px solid var(--border);background:var(--bg2)}
+.no-hit{padding:20px;text-align:center;font-size:13px;color:var(--text2)}
+/* Keyword fallback */
+.hit-list{padding:8px 14px}
+.hit{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
+.hit:last-child{border-bottom:none}
+.hit-dot{width:9px;height:9px;border-radius:50%;margin-top:5px;flex-shrink:0}
+.hit-body{flex:1;min-width:0}
+.hit-kw{font-weight:600;font-size:14px}
+.hit-meta{font-size:11px;color:var(--text2);margin-top:2px}
+.hit-ctx{font-size:12px;color:var(--text2);margin-top:5px;padding:5px 8px;background:var(--bg2);border-radius:4px;border-left:2px solid var(--border2);line-height:1.6}
+.hit-ctx strong{color:var(--text);font-weight:600}
+.hit-score{font-size:12px;font-weight:600;margin-top:3px}
+.hs-h{color:var(--red-text)}.hs-m{color:var(--amber-text)}.hs-l{color:var(--green-text)}
+/* Demo */
+.demo-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:10px;overflow:hidden}
+.demo-head{padding:9px 12px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;font-size:13px;font-weight:500}
+.demo-text{padding:10px 12px;font-size:12px;color:var(--text2);line-height:1.6}
+.footer{margin-top:32px;padding-top:16px;border-top:1px solid var(--border);font-size:11px;color:var(--text3);line-height:1.6;text-align:center}
 </style>
 </head>
 <body>
 <div class="page">
-
   <div class="header">
-    <h1>兒少保護訪視紀錄 — 風險關鍵字掃描系統</h1>
+    <h1>兒少保護訪視紀錄 — 風險掃描系統</h1>
     <p style="margin-top:6px">
       <span class="tag">學術倡議用途</span>
-      <span class="tag">對應 SDM® 結構化決策模式</span>
+      <span class="tag">SDM® 結構化決策模式</span>
+      <span class="tag tag-new">✦ 語意分析版 v2</span>
     </p>
-    <p style="margin-top:8px">社工輸入訪視紀錄，系統掃描潛在風險訊號並提示對應 SDM 評估欄位。最終判斷由社工與督導負責，本工具為輔助提示，不替代專業評估。</p>
+    <p style="margin-top:8px">輸入任何訪視紀錄文字，系統以語意理解（非關鍵字比對）偵測風險概念，抓住「孩子看起來很瘦」、「媽媽說最近沒怎麼吃」等非標準用語。</p>
   </div>
 
-  <div class="stat-row">
-    <span class="chip chip-h" id="cnt-h">高風險 — 項</span>
-    <span class="chip chip-m" id="cnt-m">中風險 — 項</span>
-    <span class="chip chip-l" id="cnt-l">低風險 — 項</span>
-    <span class="chip chip-n" id="cnt-total">共 — 個關鍵字</span>
+  <!-- Model status bar -->
+  <div class="model-bar" id="model-bar">
+    <div class="model-dot" id="model-dot"></div>
+    <span id="model-status">語意模型載入中（首次約需 30 秒）...</span>
+    <div class="progress-wrap"><div class="progress-bar" id="progress-bar"></div></div>
   </div>
 
   <div class="tabs">
     <button class="tab active" onclick="switchTab('scan',this)">掃描訪視紀錄</button>
-    <button class="tab" onclick="switchTab('kw',this)">詞庫管理</button>
     <button class="tab" onclick="switchTab('demo',this)">情境範例</button>
     <button class="tab" onclick="switchTab('about',this)">使用說明</button>
   </div>
 
   <!-- 掃描 -->
   <div class="tab-panel active" id="tab-scan">
+    <div class="mode-row">
+      <span class="mode-label">分析模式：</span>
+      <button class="mode-btn active" id="mode-sem" onclick="setMode('semantic')">語意分析（AI）</button>
+      <button class="mode-btn" id="mode-kw" onclick="setMode('keyword')">關鍵字比對</button>
+    </div>
     <div class="card">
       <div class="card-header">輸入訪視紀錄文字</div>
       <div class="card-body">
-        <textarea id="input" placeholder="在此輸入訪視紀錄、電訪摘要、觀察紀錄、家訪記錄...
+        <textarea id="input" placeholder="在此輸入訪視紀錄、電訪摘要、觀察紀錄...
 
-例：今日電訪案主媽媽，表示小凱近日學校反映曠課嚴重，上週已連續缺席4天。案母情緒激動，拒絕社工進行家訪，稱不需要幫助。旁聽到案主哭泣聲，案母隨即掛斷電話。前次訪視發現案主體重驟降，老師亦反映案主手臂有不明瘀傷。"></textarea>
+語意模式可以理解自然語言，例如：
+• 「孩子看起來很瘦，衣服都不合身了」
+• 「媽媽說最近家裡比較沒有東西吃」
+• 「手臂上有幾道不知道哪來的痕跡」
+• 「爸爸說不需要外人管他們家的事」"></textarea>
         <div class="btn-row">
-          <button class="btn btn-primary" onclick="scan()">▶ 掃描風險</button>
+          <button class="btn btn-primary" id="scan-btn" onclick="scan()" disabled>▶ 分析風險</button>
           <button class="btn" onclick="clearAll()">清除</button>
           <span class="char-count" id="char-count">0 字</span>
         </div>
       </div>
     </div>
     <div id="result-area"></div>
-  </div>
-
-  <!-- 詞庫 -->
-  <div class="tab-panel" id="tab-kw">
-    <div class="kw-toolbar">
-      <button class="btn btn-sm" onclick="setAll(true)">全部啟用</button>
-      <button class="btn btn-sm" onclick="setAll(false)">全部停用</button>
-      <span class="char-count">點擊關鍵字可停用／啟用</span>
-    </div>
-    <div id="kw-editor"></div>
   </div>
 
   <!-- 範例 -->
@@ -184,348 +175,329 @@
   <!-- 說明 -->
   <div class="tab-panel" id="tab-about">
     <div class="card">
-      <div class="card-header">系統設計說明</div>
-      <div class="card-body" style="line-height:1.8;font-size:14px">
-        <p style="margin-bottom:12px"><strong>詞庫來源</strong><br>本系統詞庫依據衛生福利部保護服務司 SDM®（結構化決策模式）安全評估表及風險評估表（2023/06/30 修正版）設計，並參考台灣重大兒虐事件共同指標整理而成。</p>
-        <p style="margin-bottom:12px"><strong>風險等級定義</strong></p>
-        <p style="margin-bottom:6px"><span class="chip chip-h">高風險</span> 對應 SDM 安全評估表危險因子，單一命中即提示。建議立即啟動安全評估程序。</p>
-        <p style="margin-bottom:6px"><span class="chip chip-m">中風險</span> 對應 SDM 風險評估表 R 系列因子，多項並存時風險累計。建議加強訪視頻率與跨網絡討論。</p>
-        <p style="margin-bottom:12px"><span class="chip chip-l">低風險</span> 結構性脆弱因素，提供背景參考。建議持續觀察並連結預防性資源。</p>
-        <p style="margin-bottom:12px"><strong>計分閾值（暫定）</strong><br>高風險關鍵字出現 1 次，或累計分數 ≥ 20 → 輸出高風險。中風險關鍵字出現且累計 ≥ 8 → 中風險。此閾值為初始設定，建議以實際個案回溯驗證後調整。</p>
-        <p style="margin-bottom:12px"><strong>重要聲明</strong><br>本工具為學術倡議用途，所有掃描結果為輔助提示，不構成正式評估結論。最終判斷須由具備兒少保護專業的社工與督導共同負責。</p>
-        <p><strong>版本資訊</strong><br>v1.0 ｜詞庫 130+ 個關鍵字 ｜對應 SDM® 2023 版</p>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-header">SDM® 表單對照</div>
-      <div class="card-body" style="font-size:13px;line-height:1.8">
-        <p>本系統關鍵字對應以下 SDM 評估工具：</p>
-        <ul style="margin-top:8px;padding-left:20px;color:var(--text2)">
-          <li>SDM® 安全評估表 — 危險因子第 1–9 項、複合因素、保護能力</li>
-          <li>SDM® 風險評估表 — R1（疏忽調查紀錄）至 R17（照顧者犯罪紀錄）</li>
-          <li>兒童及少年受虐待暨被疏忽危機診斷表（輔助參考）</li>
-        </ul>
-        <p style="margin-top:10px;color:var(--text3);font-size:12px">資料來源：衛生福利部保護服務司，https://dep.mohw.gov.tw/dops/</p>
+      <div class="card-header">v2 語意分析版說明</div>
+      <div class="card-body" style="font-size:13px;line-height:1.9">
+        <p style="margin-bottom:12px"><strong>語意分析 vs 關鍵字比對</strong><br>
+        v1 版本用關鍵字比對，只能抓「鼠患」「體重驟降」這類精確詞彙。<br>
+        v2 語意版在瀏覽器內執行輕量 AI 模型（multilingual-e5-small），計算輸入文字與各風險概念的語意相似度，能理解同義表達、口語化用語、間接描述。</p>
+        <p style="margin-bottom:12px"><strong>風險概念庫（對應 SDM®）</strong><br>
+        系統內建 24 個風險概念，對應 SDM 安全評估表危險因子與風險評估表 R1–R17。每個概念有多個語意描述，模型計算輸入文字與所有描述的平均相似度。</p>
+        <p style="margin-bottom:12px"><strong>相似度閾值</strong><br>
+        ≥ 0.75 → 高風險觸發｜≥ 0.60 → 中風險觸發｜≥ 0.45 → 低風險觸發<br>
+        閾值為初始設定，可依實際個案回溯驗證後調整。</p>
+        <p><strong>隱私聲明</strong><br>所有文字處理在本機瀏覽器進行，不傳送至任何伺服器。</p>
       </div>
     </div>
   </div>
 
   <div class="footer">
-    本工具為學術研究與倡議用途。詞庫基於 SDM® 結構化決策模式（衛福部保護服務司）。<br>
-    所有掃描結果為輔助提示，最終判斷由社工專業人員負責。<br>
-    資料不會上傳至任何伺服器，所有處理在本機瀏覽器進行。
+    兒少保護訪視紀錄風險掃描系統 v2 ｜語意分析引擎：multilingual-e5-small（瀏覽器端）<br>
+    對應 SDM® 結構化決策模式（衛福部保護服務司）｜學術倡議用途<br>
+    所有分析在本機執行，資料不上傳至任何伺服器。最終判斷由社工與督導負責。
   </div>
-
 </div>
 
-<script>
-const KW = {
-  high:[
-    {g:"身體傷害直接跡象",sdm:"SDM危險因子1",items:[
-      "體重驟降","體重明顯下降","體重持續下滑","發育遲緩","發育停滯",
-      "不明瘀傷","多處瘀傷","新舊瘀傷","瘀青","燙傷","燒傷","骨折",
-      "頭部傷害","傷口","抓痕","掐痕","鞭痕","人咬傷","挫傷","紅腫",
-      "就醫延遲","未就醫","拒絕就醫","急診","昏迷"
-    ]},
-    {g:"阻礙調查與接觸",sdm:"SDM危險因子7",items:[
-      "拒絕家訪","拒絕社工","不讓進門","躲避","逃避接觸","搬家不告知",
-      "電話不接","掛斷","失聯","無法聯繫","聯繫不上","轉移戶籍",
-      "不讓見孩子","讓孩子迴避","孩子不在家","帶走孩子"
-    ]},
-    {g:"兒少直接求救訊號",sdm:"SDM危險因子5",items:[
-      "孩子哭泣","兒少哭泣","孩子哭","一直哭","哭聲","嚎啕","不願回家",
-      "不敢回家","怕回家","跟老師說","跟同學說","主動陳述","說被打",
-      "說被罵","說沒有吃東西","說沒飯吃","說肚子餓"
-    ]},
-    {g:"照顧者直接威脅與暴力",sdm:"SDM危險因子1",items:[
-      "揚言傷害","威脅孩子","要打死","要教訓","體罰過度","嚴重體罰",
-      "扭打","摔打","拋擲","毆打","打傷","掌摑","打耳光","踹"
-    ]},
-    {g:"性虐待相關",sdm:"SDM危險因子2",items:[
-      "性虐待","性侵","猥褻","不當觸碰","私處","性器官","強迫裸體",
-      "拍攝裸照","性剝削","強迫性行為"
-    ]},
-    {g:"照顧者否認與卸責",sdm:"SDM R7/R8",items:[
-      "不需要幫助","沒有問題","孩子活該","孩子不乖","孩子說謊",
-      "孩子笨","前後說法不一","解釋矛盾","無法解釋傷勢","說不清楚"
-    ]}
-  ],
-  mid:[
-    {g:"學校出席與學習異常",sdm:"SDM R10",items:[
-      "曠課","缺席","長期缺席","連續缺席","不到校","未到校","逃學",
-      "遲到","早退","學習落後","學業退步","無法專注","上課睡覺","學校反映"
-    ]},
-    {g:"照顧者情緒與管教問題",sdm:"SDM R13/R15",items:[
-      "情緒失控","大發脾氣","歇斯底里","言語辱罵","罵髒話","羞辱",
-      "威嚇","恐嚇","不當管教","過度管教","冷漠","情感疏離",
-      "對孩子漠不關心","不理孩子","嚴厲體罰"
-    ]},
-    {g:"照顧者物質問題",sdm:"SDM R16",items:[
-      "喝酒","酗酒","醉酒","飲酒過量","吸毒","毒品","用藥",
-      "安非他命","海洛因","大麻","毒癮","藥物依賴","戒斷症狀"
-    ]},
-    {g:"照顧者心理健康",sdm:"SDM R15",items:[
-      "精神疾病","憂鬱症","躁鬱症","思覺失調","妄想","幻聽",
-      "自傷","自殺傾向","情緒不穩定","情緒障礙","心理問題",
-      "精神科就診","精神科用藥","停藥","拒絕就醫"
-    ]},
-    {g:"家庭暴力",sdm:"SDM R12",items:[
-      "家暴","夫妻吵架","夫妻衝突","家庭衝突","鄰居報警","警察到場",
-      "保護令","聲請保護令","目睹家暴","目睹暴力","婚姻暴力"
-    ]},
-    {g:"照顧功能明顯不足",sdm:"SDM危險因子3",items:[
-      "沒有吃飯","沒吃東西","沒有準備食物","沒有衣服","衣著破爛",
-      "不洗澡","衛生差","骯髒","身上有異味","沒有上學用品","飢餓"
-    ]},
-    {g:"居住環境問題",sdm:"SDM R11/危險因子4",items:[
-      "環境髒亂","環境惡劣","沒有水","沒有電","斷水斷電","堆積如山",
-      "蟑螂","鼠患","發霉","潮濕","睡地板","沒有床","居無定所","危險環境"
-    ]},
-    {g:"社會隔離",sdm:"SDM無助狀態因子6",items:[
-      "與外界隔絕","不讓出門","把孩子關在家","禁止外出",
-      "限制行動","不能聯絡朋友","剝奪社交","孤立"
-    ]}
-  ],
-  low:[
-    {g:"家庭經濟壓力",sdm:"SDM R11/複合因素",items:[
-      "經濟困難","貧困","低收入","沒有工作","失業","欠債","卡債",
-      "付不起房租","被趕出去","租屋","即將搬家","斷炊","無力負擔"
-    ]},
-    {g:"照顧安排不穩定",sdm:"SDM複合因素",items:[
-      "單親","隔代教養","祖父母照顧","親戚照顧","臨時照顧","照顧者更換",
-      "孩子獨自在家","無人照顧","課後沒有去處","無固定照顧"
-    ]},
-    {g:"照顧者自身困境",sdm:"SDM R14/複合因素",items:[
-      "照顧者童年受虐","照顧者被疏忽","原生家庭問題","親職壓力",
-      "不知道如何教孩子","親職知識不足","照顧者疲憊","喘不過氣","無助"
-    ]},
-    {g:"犯罪與司法紀錄",sdm:"SDM R17",items:[
-      "前科","犯罪紀錄","入獄","坐牢","假釋","緩刑","保護管束",
-      "觀護","家庭暴力前科","傷害罪","吸毒前科","通緝"
-    ]},
-    {g:"網絡觀察通報",sdm:"SDM複合因素",items:[
-      "老師反映","學校通報","警察通報","鄰居反映","里長通報",
-      "醫院通報","護士反映","親戚擔心","親友擔心","鄰居擔心","主動求助"
-    ]},
-    {g:"醫療與發展觀察",sdm:"SDM R9/R10",items:[
-      "預防接種未完成","健康檢查未做","牙齒蛀牙嚴重","視力問題",
-      "語言發展落後","動作發展落後","情緒調節困難","特殊需求","早療"
-    ]}
-  ]
-};
-
-const DEMOS = [
-  {label:"情境一：凱凱案類型（複合高風險）",
-   text:"今日電訪案主阿媽，表示凱凱近日學校反映曠課嚴重，上週已連續缺席4天未到校。阿媽情緒失控，拒絕社工進行家訪，稱不需要幫助。旁聽到孩子哭聲，阿媽隨即掛斷電話。前次訪視發現凱凱體重驟降，老師反映手臂有不明瘀傷，前後說法不一，無法解釋傷勢來源。"},
-  {label:"情境二：疏忽照顧（環境與基本需求）",
-   text:"家訪發現家中環境髒亂，堆積如山，有鼠患跡象，沒有水可以使用。案母失業中，無法支付房租，告知即將被房東趕出。兩名孩子獨自在家，說肚子餓，沒有吃東西，身上有異味，衣著破爛。案母不知道如何教孩子，表示經濟困難，壓力很大，照顧者疲憊，喘不過氣。"},
-  {label:"情境三：目睹家暴（婚暴衝擊兒少）",
-   text:"案主媽媽表示上週家暴發生，鄰居報警，警察到場處理。目睹家暴的小明近日上課睡覺，學業退步，老師反映有情緒調節困難。案父有喝酒習慣，酗酒後情緒失控，媽媽已聲請保護令。案母表示孩子說被打，不敢回家，跟老師說爸爸很可怕。"},
-  {label:"情境四：照顧者心理健康問題",
-   text:"案母被診斷有憂鬱症，近期停藥，情緒不穩定，出現妄想言語，稱鄰居要害她。案父三個月前入獄，案母為單親照顧三名子女。學校老師反映案主長期缺席，且上課無法專注，學習落後明顯，語言發展落後。社工電訪多次均失聯，無法聯繫。"}
+<script type="module">
+// ── 語意風險概念庫（對應SDM） ──────────────────────────────
+const RISK_CONCEPTS = [
+  // 高風險
+  {id:'body_injury', level:'high', label:'身體傷害跡象', sdm:'SDM危險因子1',
+   descs:['孩子身上有傷口瘀傷','手臂腿部有不明的痕跡','孩子身體受到傷害','皮膚上有燙傷燒傷的痕跡','骨折受傷就醫','孩子看起來被打過']},
+  {id:'weight_loss', level:'high', label:'體重與發育異常', sdm:'SDM R9/R10',
+   descs:['孩子看起來很瘦','孩子體重下降','孩子發育不良身材瘦小','孩子最近瘦很多','孩子吃不飽導致發育遲緩','孩子營養不良']},
+  {id:'block_access', level:'high', label:'阻礙社工調查', sdm:'SDM危險因子7',
+   descs:['照顧者拒絕讓社工進門','不讓外人接觸孩子','躲避社工電話不接','搬家沒有通知社工','拒絕任何外人介入','說不需要別人幫助']},
+  {id:'child_signal', level:'high', label:'兒少直接求救', sdm:'SDM危險因子5',
+   descs:['孩子哭著說被打','孩子告訴老師家裡的事','孩子不敢回家','孩子說肚子餓很久了','孩子主動說出家裡的問題','孩子說想離開這個家']},
+  {id:'direct_threat', level:'high', label:'照顧者直接威脅暴力', sdm:'SDM危險因子1',
+   descs:['照顧者打孩子','對孩子施以嚴重體罰','威脅要傷害孩子','對孩子使用暴力','毆打踢踹孩子','照顧者無法控制對孩子的暴力']},
+  {id:'sexual_abuse', level:'high', label:'性虐待相關', sdm:'SDM危險因子2',
+   descs:['孩子遭受性侵害','對孩子有不當的性接觸','孩子被性剝削','孩子陳述被碰觸私處','孩子出現性行為相關的創傷反應']},
+  {id:'caregiver_denial', level:'high', label:'照顧者否認卸責', sdm:'SDM R7/R8',
+   descs:['照顧者說孩子的傷是自己造成的','前後說法矛盾無法解釋','說孩子活該受到懲罰','無法合理說明孩子的傷','否認家裡有任何問題','說孩子在說謊']},
+  // 中風險
+  {id:'school_absence', level:'mid', label:'學校出席異常', sdm:'SDM R10',
+   descs:['孩子長期不去學校','曠課缺席','孩子很少到學校','學校說孩子一直沒來','孩子無法正常上學','孩子學習狀況很差']},
+  {id:'caregiver_emotion', level:'mid', label:'照顧者情緒管教問題', sdm:'SDM R13/R15',
+   descs:['照顧者對孩子大吼大叫','用言語羞辱孩子','情緒失控對孩子發脾氣','照顧者對孩子非常冷漠','不理孩子漠視孩子的需求','用恐嚇威脅的方式管教']},
+  {id:'substance', level:'mid', label:'照顧者物質濫用', sdm:'SDM R16',
+   descs:['照顧者有喝酒的習慣','酗酒醉酒狀態照顧孩子','照顧者使用毒品','藥物依賴戒斷問題','醉酒後行為失控','物質濫用影響照顧能力']},
+  {id:'mental_health', level:'mid', label:'照顧者心理健康問題', sdm:'SDM R15',
+   descs:['照顧者有精神疾病','憂鬱症躁鬱症思覺失調','照顧者情緒極度不穩定','有自傷或自殺的念頭','精神科藥物停藥','出現妄想或幻覺症狀']},
+  {id:'domestic_violence', level:'mid', label:'家庭暴力', sdm:'SDM R12',
+   descs:['家裡有家暴情形','夫妻之間有暴力衝突','孩子目睹家庭暴力','警察曾因家暴到場處理','有申請保護令','家庭成員之間有激烈衝突']},
+  {id:'neglect_basic', level:'mid', label:'基本照顧疏忽', sdm:'SDM危險因子3',
+   descs:['孩子沒有東西吃','孩子衣著骯髒破爛','孩子衛生狀況很差','沒有幫孩子準備食物','孩子身上有異味很久沒洗澡','孩子的基本需求沒有被照顧']},
+  {id:'living_environment', level:'mid', label:'居住環境惡劣', sdm:'SDM危險因子4',
+   descs:['家裡環境非常髒亂','老鼠蟑螂出沒的環境','家裡沒有水沒有電','危險的居住環境','孩子睡在不安全的地方','家中衛生條件極差']},
+  {id:'isolation', level:'mid', label:'社會隔離', sdm:'SDM無助因子6',
+   descs:['孩子被禁止外出','不讓孩子跟外界接觸','孩子沒有朋友被孤立','照顧者把孩子關在家裡','孩子與外界完全隔絕','孩子沒有任何社交活動']},
+  // 低風險
+  {id:'economic', level:'low', label:'家庭經濟壓力', sdm:'SDM R11',
+   descs:['家庭經濟狀況困難','付不起房租水電','失業沒有收入來源','借債欠錢無力償還','家裡沒有足夠的錢','經濟壓力造成家庭功能失調']},
+  {id:'unstable_care', level:'low', label:'照顧安排不穩定', sdm:'SDM複合因素',
+   descs:['單親家庭照顧壓力大','隔代教養祖父母照顧','孩子獨自在家無人照顧','照顧者經常更換','孩子放學後沒有去處','臨時或不穩定的照顧安排']},
+  {id:'caregiver_history', level:'low', label:'照顧者自身困境', sdm:'SDM R14',
+   descs:['照顧者自己小時候也被虐待','照顧者不知道怎麼教孩子','親職壓力過大','照顧者本身也是受害者','原生家庭有問題','照顧者自身能力不足']},
+  {id:'criminal', level:'low', label:'犯罪司法紀錄', sdm:'SDM R17',
+   descs:['照顧者有犯罪前科','曾經入獄服刑','假釋緩刑中','受保護管束','家暴相關犯罪紀錄','照顧者有暴力犯罪史']},
+  {id:'network_report', level:'low', label:'網絡觀察通報', sdm:'SDM複合因素',
+   descs:['老師發現孩子有異狀','學校主動通報','鄰居反映擔心孩子','醫院護理師通報','親友擔心孩子的狀況','周遭的人發現問題主動通知']},
+  {id:'medical_neglect', level:'low', label:'醫療發展疏忽', sdm:'SDM R9',
+   descs:['孩子預防接種沒有做','沒有定期帶孩子健康檢查','孩子生病沒有就醫','發展遲緩沒有介入','孩子需要早療但未接受服務','醫療需求被忽視']},
 ];
 
-const SCORES = {high:10, mid:4, low:1};
-let active = {};
+const THRESHOLDS = {high:0.75, mid:0.60, low:0.45};
+const SCORE_MAP = {high:10, mid:4, low:1};
 
-function init(){
-  allKW().forEach(w => active[w] = true);
-  updateStatChips();
-  renderKWEditor();
-  renderDemos();
-  document.getElementById('input').addEventListener('input', function(){
-    document.getElementById('char-count').textContent = this.value.length + ' 字';
-  });
-}
+let pipe = null;
+let modelReady = false;
+let mode = 'semantic';
 
-function allKW(){
-  return [...KW.high,...KW.mid,...KW.low].flatMap(g=>g.items);
-}
-
-function updateStatChips(){
-  let h=0,m=0,l=0;
-  KW.high.forEach(g=>g.items.forEach(w=>{if(active[w])h++}));
-  KW.mid.forEach(g=>g.items.forEach(w=>{if(active[w])m++}));
-  KW.low.forEach(g=>g.items.forEach(w=>{if(active[w])l++}));
-  document.getElementById('cnt-h').textContent = `高風險 ${h} 項`;
-  document.getElementById('cnt-m').textContent = `中風險 ${m} 項`;
-  document.getElementById('cnt-l').textContent = `低風險 ${l} 項`;
-  document.getElementById('cnt-total').textContent = `共 ${h+m+l} 個關鍵字`;
-}
-
-function renderKWEditor(){
-  const el = document.getElementById('kw-editor');
-  const lvConfig = [
-    {lv:'high', label:'高風險關鍵字', cls:'kc-h', chipH:'chip-h'},
-    {lv:'mid',  label:'中風險關鍵字', cls:'kc-m', chipH:'chip-m'},
-    {lv:'low',  label:'低風險關鍵字', cls:'kc-l', chipH:'chip-l'},
-  ];
-  let html = '';
-  for(const {lv, label, cls, chipH} of lvConfig){
-    html += `<div class="kw-section">
-      <div class="kw-sec-head" onclick="toggleSec(this)">
-        <span class="chip ${chipH}" style="font-size:11px">${label}</span>
-        <span style="font-size:12px;color:var(--text3)">${KW[lv].reduce((s,g)=>s+g.items.length,0)} 個詞</span>
-        <span style="margin-left:auto;font-size:12px;color:var(--text3)">▾</span>
-      </div>
-      <div class="kw-sec-body open">`;
-    for(const g of KW[lv]){
-      html += `<div class="kw-subgroup">
-        <div class="kw-sublabel">${g.g}<span class="kw-sdm">${g.sdm}</span></div>
-        <div class="chips-wrap">`;
-      for(const w of g.items){
-        html += `<span class="kw-chip ${cls}${active[w]?'':' off'}" onclick="toggleChip('${w}',this,'${cls}')">${w}</span>`;
-      }
-      html += `</div></div>`;
-    }
-    html += `</div></div>`;
-  }
-  el.innerHTML = html;
-}
-
-function toggleSec(head){
-  const body = head.nextElementSibling;
-  const isOpen = body.classList.contains('open');
-  body.classList.toggle('open', !isOpen);
-  head.querySelector('span:last-child').textContent = isOpen ? '▸' : '▾';
-}
-
-function toggleChip(word, el, cls){
-  active[word] = !active[word];
-  el.className = `kw-chip ${cls}${active[word] ? '' : ' off'}`;
-  updateStatChips();
-}
-
-function setAll(on){
-  allKW().forEach(w => active[w] = on);
-  renderKWEditor();
-  updateStatChips();
-}
-
-function switchTab(id, btn){
-  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.getElementById('tab-' + id).classList.add('active');
-  btn.classList.add('active');
-}
-
-function renderDemos(){
-  const el = document.getElementById('demo-list');
-  let html = '';
-  for(let i=0; i<DEMOS.length; i++){
-    const d = DEMOS[i];
-    html += `<div class="demo-card">
-      <div class="demo-head">${d.label}
-        <button class="btn btn-sm" onclick="loadDemo(${i})">載入並掃描</button>
-      </div>
-      <div class="demo-text">${d.text.slice(0,100)}…</div>
-    </div>`;
-  }
-  el.innerHTML = html;
-}
-
-function loadDemo(i){
-  const d = DEMOS[i];
-  document.getElementById('input').value = d.text;
-  document.getElementById('char-count').textContent = d.text.length + ' 字';
-  switchTab('scan', document.querySelectorAll('.tab')[0]);
-  scan();
-}
-
-function esc(s){ return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); }
-
-function getCtx(text, word){
-  const idx = text.indexOf(word);
-  if(idx < 0) return '';
-  const s = Math.max(0, idx-25), e = Math.min(text.length, idx+word.length+35);
-  let c = text.slice(s, e);
-  if(s > 0) c = '…' + c;
-  if(e < text.length) c += '…';
-  return c.replace(new RegExp(esc(word),'g'), `<strong>${word}</strong>`);
-}
-
-function clearAll(){
-  document.getElementById('input').value = '';
-  document.getElementById('char-count').textContent = '0 字';
-  document.getElementById('result-area').innerHTML = '';
-}
-
-function scan(){
-  const text = document.getElementById('input').value.trim();
-  if(!text){
-    document.getElementById('result-area').innerHTML =
-      '<div class="card"><div class="no-hit">請先輸入訪視紀錄內容。</div></div>';
-    return;
-  }
-  const hits = []; let total = 0;
-  const run = (lv, dotCls, scoreCls) => {
-    for(const g of KW[lv]){
-      for(const w of g.items){
-        if(!active[w]) continue;
-        const m = text.match(new RegExp(esc(w),'g'));
-        if(m){
-          const cnt = m.length, score = SCORES[lv] * cnt;
-          total += score;
-          hits.push({w, lv, cat:g.g, sdm:g.sdm, cnt, score, ctx:getCtx(text,w), dotCls, scoreCls});
+// ── 載入模型 ──────────────────────────────────────────────
+async function loadModel(){
+  try {
+    const {pipeline, env} = await import('https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2');
+    env.allowLocalModels = false;
+    updateModelBar('loading', '語意模型載入中...', 10);
+    pipe = await pipeline('feature-extraction', 'Xenova/multilingual-e5-small', {
+      progress_callback: (p) => {
+        if(p.status === 'progress'){
+          const pct = Math.round(p.progress || 0);
+          updateModelBar('loading', `下載模型中 ${pct}%...`, pct);
         }
       }
-    }
-  };
-  run('high','dot-h','hs-h');
-  run('mid','dot-m','hs-m');
-  run('low','dot-l','hs-l');
-  hits.sort((a,b)=>({high:0,mid:1,low:2}[a.lv]-{high:0,mid:1,low:2}[b.lv]||b.score-a.score));
-
-  let riskLabel, rbCls, sdmNote;
-  if(hits.some(h=>h.lv==='high') || total>=20){
-    riskLabel='🔴 高風險 — 建議立即啟動安全評估';
-    rbCls='rb-high'; sdmNote='建議完成 SDM® 安全評估表，評估是否啟動安全計畫或家外安置';
-  } else if(hits.some(h=>h.lv==='mid') || total>=8){
-    riskLabel='🟡 中風險 — 建議加強訪視與跨網絡討論';
-    rbCls='rb-mid'; sdmNote='建議完成 SDM® 風險評估表，評估訪視頻率與處遇計畫';
-  } else if(hits.length>0){
-    riskLabel='🟢 低風險 — 列入持續觀察';
-    rbCls='rb-low'; sdmNote='持續追蹤，連結預防性資源，下次訪視時再評估';
-  } else {
-    riskLabel='⬜ 未偵測到已知風險關鍵字';
-    rbCls='rb-none'; sdmNote='不代表無風險，仍需社工依專業判斷評估';
+    });
+    modelReady = true;
+    updateModelBar('ready', '語意模型已就緒，可以開始分析', 100);
+    document.getElementById('scan-btn').disabled = false;
+  } catch(e){
+    updateModelBar('error', '模型載入失敗，已切換至關鍵字模式', 0);
+    setMode('keyword');
+    document.getElementById('scan-btn').disabled = false;
+    document.getElementById('mode-sem').disabled = true;
   }
-
-  let html = `<div class="card">
-    <div class="result-header">
-      掃描結果
-      <span class="risk-badge ${rbCls}">${riskLabel}</span>
-      <span style="font-size:11px;color:var(--text3);margin-left:auto">命中 ${hits.length} 項｜風險分數 ${total}</span>
-    </div>`;
-
-  if(!hits.length){
-    html += `<div class="no-hit">未命中任何啟用中的關鍵字<br>
-      <span style="font-size:12px">不代表無風險，仍需社工依專業知識進行完整評估</span></div>`;
-  } else {
-    html += `<div class="hit-list">`;
-    for(const h of hits){
-      html += `<div class="hit">
-        <div class="hit-dot ${h.dotCls}"></div>
-        <div class="hit-body">
-          <div class="hit-kw">${h.w}${h.cnt>1?` <span style="font-size:12px;font-weight:400;color:var(--text2)">×${h.cnt}</span>`:''}</div>
-          <div class="hit-meta">${h.cat}　｜　${h.sdm}</div>
-          <div class="hit-ctx">${h.ctx}</div>
-          <div class="hit-score ${h.scoreCls}">+${h.score} 分</div>
-        </div>
-      </div>`;
-    }
-    html += `</div>
-    <div class="total-bar">
-      <span class="total-num">${total}</span>
-      <span class="total-label">累計風險分數（${hits.length} 項命中）</span>
-      <span class="disclaimer">輔助提示工具，不替代社工專業判斷<br>最終決策由社工與督導負責</span>
-    </div>`;
-  }
-  html += `<div class="sdm-ref">📋 ${sdmNote}</div></div>`;
-  document.getElementById('result-area').innerHTML = html;
 }
 
-init();
+function updateModelBar(status, msg, pct){
+  const dot = document.getElementById('model-dot');
+  const statusEl = document.getElementById('model-status');
+  const bar = document.getElementById('progress-bar');
+  dot.className = 'model-dot' + (status==='ready'?' ready':status==='error'?' error':'');
+  statusEl.textContent = msg;
+  bar.style.width = pct + '%';
+  bar.style.background = status==='ready'?'var(--green)':status==='error'?'var(--red)':'var(--blue-text)';
+}
+
+// ── 語意計算 ───────────────────────────────────────────────
+async function embed(text){
+  const out = await pipe(`query: ${text}`, {pooling:'mean', normalize:true});
+  return Array.from(out.data);
+}
+
+function cosineSim(a, b){
+  let dot=0, na=0, nb=0;
+  for(let i=0;i<a.length;i++){dot+=a[i]*b[i];na+=a[i]*a[i];nb+=b[i]*b[i];}
+  return dot/(Math.sqrt(na)*Math.sqrt(nb));
+}
+
+async function semanticScan(text){
+  const queryVec = await embed(text);
+  const results = [];
+  for(const concept of RISK_CONCEPTS){
+    const sims = await Promise.all(concept.descs.map(d => embed(`passage: ${d}`).then(v => cosineSim(queryVec, v))));
+    const score = sims.reduce((a,b)=>a+b,0)/sims.length;
+    const maxSim = Math.max(...sims);
+    const bestDesc = concept.descs[sims.indexOf(maxSim)];
+    const threshold = THRESHOLDS[concept.level];
+    if(maxSim >= threshold){
+      results.push({...concept, similarity: maxSim, avgSim: score, bestDesc});
+    }
+  }
+  results.sort((a,b)=>b.similarity-a.similarity);
+  return results;
+}
+
+// ── 關鍵字備援 ────────────────────────────────────────────
+const KW = {
+  high:[
+    {g:"身體傷害",sdm:"危險因子1",items:["體重驟降","體重明顯下降","不明瘀傷","多處瘀傷","燙傷","骨折","抓痕","掐痕","鞭痕","就醫延遲","未就醫","昏迷"]},
+    {g:"阻礙調查",sdm:"危險因子7",items:["拒絕家訪","拒絕社工","不讓進門","失聯","無法聯繫","帶走孩子","不讓見孩子"]},
+    {g:"兒少求救",sdm:"危險因子5",items:["孩子哭泣","不願回家","不敢回家","主動陳述","說被打","說沒飯吃","說肚子餓"]},
+    {g:"照顧者威脅",sdm:"危險因子1",items:["揚言傷害","毆打","掌摑","踹","摔打","嚴重體罰"]},
+    {g:"否認卸責",sdm:"R7/R8",items:["不需要幫助","孩子活該","前後說法不一","無法解釋傷勢"]},
+  ],
+  mid:[
+    {g:"學校異常",sdm:"R10",items:["曠課","缺席","長期缺席","逃學","學習落後"]},
+    {g:"照顧者情緒",sdm:"R13",items:["情緒失控","言語辱罵","羞辱","威嚇","冷漠","漠不關心"]},
+    {g:"物質濫用",sdm:"R16",items:["喝酒","酗酒","醉酒","吸毒","毒品","藥物依賴"]},
+    {g:"心理健康",sdm:"R15",items:["精神疾病","憂鬱症","思覺失調","妄想","停藥","情緒不穩定"]},
+    {g:"家庭暴力",sdm:"R12",items:["家暴","保護令","目睹家暴","警察到場"]},
+    {g:"基本疏忽",sdm:"危險因子3",items:["沒有吃飯","衣著破爛","衛生差","身上有異味","骯髒"]},
+    {g:"環境惡劣",sdm:"危險因子4",items:["環境髒亂","鼠患","老鼠出沒","沒有水","沒有電","蟑螂","發霉"]},
+  ],
+  low:[
+    {g:"經濟壓力",sdm:"R11",items:["經濟困難","失業","欠債","付不起房租","低收入"]},
+    {g:"照顧不穩",sdm:"複合",items:["單親","隔代教養","孩子獨自在家","無人照顧"]},
+    {g:"網絡通報",sdm:"複合",items:["老師反映","學校通報","鄰居反映","醫院通報"]},
+  ]
+};
+const SC={high:10,mid:4,low:1};
+
+function kwScan(text){
+  const hits=[];let total=0;
+  const run=(lv,dotCls,scoreCls)=>{
+    for(const g of KW[lv]) for(const w of g.items){
+      const m=text.match(new RegExp(w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'g'));
+      if(m){const cnt=m.length,score=SC[lv]*cnt;total+=score;
+        const idx=text.indexOf(w),s=Math.max(0,idx-25),e=Math.min(text.length,idx+w.length+35);
+        let ctx=text.slice(s,e);if(s>0)ctx='…'+ctx;if(e<text.length)ctx+='…';
+        ctx=ctx.replace(new RegExp(w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'g'),`<strong>${w}</strong>`);
+        hits.push({w,lv,cat:g.g,sdm:g.sdm,cnt,score,ctx,dotCls,scoreCls});}
+    }
+  };
+  run('high','dot-h','hs-h');run('mid','dot-m','hs-m');run('low','dot-l','hs-l');
+  hits.sort((a,b)=>({high:0,mid:1,low:2}[a.lv]-{high:0,mid:1,low:2}[b.lv]||b.score-a.score));
+  return {hits,total};
+}
+
+// ── UI ────────────────────────────────────────────────────
+function setMode(m){
+  mode=m;
+  document.getElementById('mode-sem').classList.toggle('active',m==='semantic');
+  document.getElementById('mode-kw').classList.toggle('active',m==='keyword');
+}
+
+function switchTab(id,btn){
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+window.switchTab=switchTab;
+
+function clearAll(){
+  document.getElementById('input').value='';
+  document.getElementById('char-count').textContent='0 字';
+  document.getElementById('result-area').innerHTML='';
+}
+window.clearAll=clearAll;
+
+window.setMode=setMode;
+
+async function scan(){
+  const text=document.getElementById('input').value.trim();
+  if(!text){document.getElementById('result-area').innerHTML='<div class="card"><div class="no-hit">請先輸入訪視紀錄內容。</div></div>';return;}
+  const btn=document.getElementById('scan-btn');
+  btn.disabled=true;btn.textContent='分析中...';
+  document.getElementById('result-area').innerHTML='<div class="card"><div class="no-hit">分析中，請稍候...</div></div>';
+
+  try{
+    if(mode==='semantic' && modelReady){
+      const results = await semanticScan(text);
+      renderSemantic(results, text);
+    } else {
+      const {hits,total}=kwScan(text);
+      renderKeyword(hits,total);
+    }
+  } catch(e){
+    document.getElementById('result-area').innerHTML=`<div class="card"><div class="no-hit">分析失敗：${e.message}</div></div>`;
+  }
+  btn.disabled=false;btn.textContent='▶ 分析風險';
+}
+window.scan=scan;
+
+function renderSemantic(results, text){
+  if(!results.length){
+    document.getElementById('result-area').innerHTML='<div class="card"><div class="result-header">語意分析結果 <span class="risk-badge rb-none">⬜ 未偵測到顯著風險概念</span></div><div class="no-hit">語意相似度低於閾值<br><span style="font-size:12px">不代表無風險，仍需社工依專業判斷評估</span></div></div>';
+    return;
+  }
+  const hasHigh=results.some(r=>r.level==='high');
+  const hasMid=results.some(r=>r.level==='mid');
+  let riskLabel,rbCls,sdmNote;
+  if(hasHigh){riskLabel='🔴 高風險 — 建議立即啟動安全評估';rbCls='rb-high';sdmNote='建議完成 SDM® 安全評估表，評估是否啟動安全計畫或家外安置';}
+  else if(hasMid){riskLabel='🟡 中風險 — 建議加強訪視與跨網絡討論';rbCls='rb-mid';sdmNote='建議完成 SDM® 風險評估表，評估訪視頻率與處遇計畫';}
+  else{riskLabel='🟢 低風險 — 列入持續觀察';rbCls='rb-low';sdmNote='持續追蹤，連結預防性資源，下次訪視時再評估';}
+
+  const totalScore=results.reduce((s,r)=>s+Math.round(r.similarity*100),0);
+
+  let html=`<div class="card"><div class="result-header">語意分析結果 <span class="risk-badge ${rbCls}">${riskLabel}</span><span style="font-size:11px;color:var(--text3);margin-left:auto">偵測到 ${results.length} 個風險概念</span></div><div class="sem-group">`;
+
+  for(const r of results){
+    const pct=Math.round(r.similarity*100);
+    const lv=r.level;
+    const dotCls=lv==='high'?'dot-h':lv==='mid'?'dot-m':'dot-l';
+    const barCls=lv==='high'?'bar-h':lv==='mid'?'bar-m':'bar-l';
+    const pctCls=lv==='high'?'pct-h':lv==='mid'?'pct-m':'pct-l';
+    html+=`<div class="sem-item">
+      <div class="sem-dot ${dotCls}"></div>
+      <div class="sem-body">
+        <div class="sem-concept">${r.label}</div>
+        <div class="sem-sdm">${r.sdm}</div>
+        <div class="sem-score-wrap">
+          <div class="sem-bar-bg"><div class="sem-bar ${barCls}" style="width:${pct}%"></div></div>
+          <span class="sem-pct ${pctCls}">${pct}%</span>
+        </div>
+        <div class="sem-reason">最相近的風險描述：「${r.bestDesc}」</div>
+      </div>
+    </div>`;
+  }
+  html+=`</div><div class="total-bar"><span class="total-num">${results.length}</span><span class="total-label">風險概念命中數</span><span class="disclaimer">語意分析輔助提示，不替代社工專業判斷<br>最終決策由社工與督導負責</span></div>`;
+  html+=`<div class="sdm-ref">📋 ${sdmNote}</div></div>`;
+  document.getElementById('result-area').innerHTML=html;
+}
+
+function renderKeyword(hits,total){
+  let riskLabel,rbCls,sdmNote;
+  if(hits.some(h=>h.lv==='high')||total>=20){riskLabel='🔴 高風險';rbCls='rb-high';sdmNote='建議完成 SDM® 安全評估表';}
+  else if(hits.some(h=>h.lv==='mid')||total>=8){riskLabel='🟡 中風險';rbCls='rb-mid';sdmNote='建議完成 SDM® 風險評估表';}
+  else if(hits.length){riskLabel='🟢 低風險';rbCls='rb-low';sdmNote='持續追蹤，連結預防性資源';}
+  else{riskLabel='⬜ 未命中';rbCls='rb-none';sdmNote='不代表無風險，仍需社工專業判斷';}
+
+  let html=`<div class="card"><div class="result-header">關鍵字掃描結果 <span class="risk-badge ${rbCls}">${riskLabel}</span><span style="font-size:11px;color:var(--text3);margin-left:auto">命中 ${hits.length} 項｜分數 ${total}</span></div>`;
+  if(!hits.length){html+=`<div class="no-hit">未命中任何關鍵字</div>`;}
+  else{
+    html+=`<div class="hit-list">`;
+    for(const h of hits) html+=`<div class="hit"><div class="hit-dot ${h.dotCls}"></div><div class="hit-body"><div class="hit-kw">${h.w}${h.cnt>1?` <span style="font-size:11px;font-weight:400;color:var(--text2)">×${h.cnt}</span>`:''}</div><div class="hit-meta">${h.cat}　｜　${h.sdm}</div><div class="hit-ctx">${h.ctx}</div><div class="hit-score ${h.scoreCls}">+${h.score} 分</div></div></div>`;
+    html+=`</div><div class="total-bar"><span class="total-num">${total}</span><span class="total-label">累計分數（${hits.length} 項）</span><span class="disclaimer">輔助提示，最終由社工判斷</span></div>`;
+  }
+  html+=`<div class="sdm-ref">📋 ${sdmNote}</div></div>`;
+  document.getElementById('result-area').innerHTML=html;
+}
+
+// ── 範例 ──────────────────────────────────────────────────
+const DEMOS=[
+  {label:'情境一：非標準用語（語意版優勢）',
+   text:'今天去家裡探視，小朋友開門的時候看到他整個人很瘦，衣服都快掉下來了，問他有沒有吃東西，他說媽媽最近沒有準備飯。手臂上看到一些不知道哪來的痕跡，問他說不知道。媽媽回來後態度很差，說不需要外人來管他們家的事，直接把我推出去。'},
+  {label:'情境二：凱凱案類型',
+   text:'電訪案主阿媽，凱凱連續缺席4天。阿媽情緒失控，拒絕社工進行家訪，稱不需要幫助。旁聽到孩子哭聲，阿媽掛斷電話。前次訪視發現凱凱體重驟降，老師反映手臂有不明瘀傷，前後說法不一。'},
+  {label:'情境三：照顧者心理健康',
+   text:'案母停藥後情緒極度不穩定，講話出現妄想內容，說鄰居要害她。孩子說媽媽最近很奇怪，一直哭一直說不清楚的話，家裡也沒有什麼吃的。案父已入獄三個月，孩子白天都自己在家，學校說他最近一直沒有來。'},
+  {label:'情境四：居住環境問題',
+   text:'進門後發現家裡狀況很差，地板上有垃圾和雜物，廚房發現有老鼠出沒的痕跡，浴室發霉非常嚴重。孩子說家裡有時候沒有水，要去鄰居那邊借。媽媽說已經很久沒有工作，下個月可能付不起房租。'},
+];
+
+function renderDemos(){
+  document.getElementById('demo-list').innerHTML=DEMOS.map((d,i)=>`
+    <div class="demo-card">
+      <div class="demo-head">${d.label}<button class="btn" style="font-size:11px;padding:4px 10px" onclick="loadDemo(${i})">載入並分析</button></div>
+      <div class="demo-text">${d.text.slice(0,90)}…</div>
+    </div>`).join('');
+}
+
+window.loadDemo=function(i){
+  document.getElementById('input').value=DEMOS[i].text;
+  document.getElementById('char-count').textContent=DEMOS[i].text.length+' 字';
+  switchTab('scan',document.querySelectorAll('.tab')[0]);
+  scan();
+};
+
+document.getElementById('input').addEventListener('input',function(){
+  document.getElementById('char-count').textContent=this.value.length+' 字';
+});
+
+renderDemos();
+loadModel();
 </script>
 </body>
 </html>
